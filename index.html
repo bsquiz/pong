@@ -1,0 +1,148 @@
+<html>
+	<head>
+		<title>pong</title>
+	</head>
+	
+	<body>
+		<div id="playerScore"></div>
+		<div id="opponentScore"></div>
+		
+		<canvas id="canvas" width="550" height="600"></canvas>
+
+		<script src="js/gameObject.js"></script>
+		<script src="js/ball.js"></script>
+		<script src="js/paddle.js"></script>
+		<script src="js/computerPaddle.js"></script>
+		<script>
+			const player = new Paddle();
+			const opponent = new ComputerPaddle();
+			const ball = new Ball();
+			const $canvas = document.getElementById('canvas');
+			const ctx = $canvas.getContext('2d');
+			const gameWidth = $canvas.width;
+			const gameHeight = $canvas.height;
+			const Keys = {
+				SPACE_BAR: 32,
+				UP: 38,
+				DOWN: 40	
+			};
+			const $playerScore = document.getElementById('playerScore');
+			const $opponentScore = document.getElementById('opponentScore');
+			let playerScore = 0;
+			let opponentScore = 0;
+			let gameStarted = false;
+
+			function reset() {
+				player.setGameWidth(gameWidth);
+				player.setGameHeight(gameHeight);
+				opponent.setGameWidth(gameWidth);
+				opponent.setGameHeight(gameHeight);
+				ball.setGameWidth(gameWidth);
+				ball.setGameHeight(gameHeight);
+				ball.reset();
+				opponent.reset(gameWidth - opponent.getWidth(),
+					gameHeight / 2 - opponent.getHeight() / 2);
+			}
+
+			function drawCourt() {
+				ctx.clearRect(0, 0, gameWidth, gameHeight);
+				ctx.beginPath();
+				ctx.setLineDash([]);
+	
+				ctx.moveTo(0, 0);
+				ctx.lineTo(gameWidth, 0);
+
+				ctx.moveTo(0, gameHeight);
+				ctx.lineTo(gameWidth, gameHeight);
+				
+				ctx.stroke();
+
+				ctx.beginPath();
+				ctx.setLineDash([5, 15]);
+				ctx.moveTo(gameWidth / 2, 0);
+				ctx.lineTo(gameWidth / 2, gameHeight);
+				ctx.stroke();
+			}
+
+
+			function update() {
+				drawCourt();
+
+				ball.move();
+				player.move();
+				opponent.move(ball.getY());
+				
+				if (ball.hitTest(player)) {
+					ball.reflectOffPaddle(player.getY(), player.getHeight());
+				}
+
+				if (ball.hitTest(opponent)) {
+					ball.reflectOffPaddle(opponent.getY(), opponent.getHeight());
+				}
+
+				ball.draw(ctx);
+				player.draw(ctx);
+				opponent.draw(ctx);
+
+				if (ball.isInPlayerScoreZone()) {
+					playerScore++;
+					reset();
+				}
+
+				if (ball.isInOpponentScoreZone()) {
+					opponentScore++;
+					reset();
+				}
+			
+				$playerScore.innerHTML = playerScore;
+				$opponentScore.innerHTML = opponentScore;
+
+				window.requestAnimationFrame(update);
+			}
+	
+			function startGame() {
+				reset();
+				gameStarted = true;
+				window.requestAnimationFrame(update);
+			}
+		
+			ctx.lineWidth = 3;
+			ctx.fillStyle = 'white';		
+			ctx.strokeStyle = 'white';		
+
+			window.onkeydown = function(e) {
+				if (e.keyCode === Keys.UP) {
+					player.setYSpeed(-1);
+					player.setIsMoving(true);
+				} else if (e.keyCode === Keys.DOWN) {
+					player.setYSpeed(1);
+					player.setIsMoving(true);
+				}
+			};
+			window.onkeyup = function(e) {
+				if (!gameStarted && e.keyCode === Keys.SPACE_BAR) {
+					startGame();
+				}
+				player.setIsMoving(false);
+			};
+					startGame();
+		</script>
+		
+		<style>
+			body {
+				background: black;
+				color: white;
+			}
+			#playerScore, #opponentScore {
+				position: absolute;
+				font-size: 60px;
+			}
+			#playerScore {
+				left: 240px;
+			}
+			#opponentScore {
+				left: 300px;
+			}
+		</style>
+	</body>
+</html>
