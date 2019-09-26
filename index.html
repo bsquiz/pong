@@ -4,11 +4,9 @@
 	</head>
 	
 	<body>
-		<div id="playerScore"></div>
-		<div id="opponentScore"></div>
-		
 		<canvas id="canvas" width="550" height="600"></canvas>
 
+		<script src="js/font.js"></script>
 		<script src="js/gameObject.js"></script>
 		<script src="js/ball.js"></script>
 		<script src="js/paddle.js"></script>
@@ -26,11 +24,22 @@
 				UP: 38,
 				DOWN: 40	
 			};
-			const $playerScore = document.getElementById('playerScore');
-			const $opponentScore = document.getElementById('opponentScore');
+			const objectWidth = 10;
+			const scoreY = 25;
 			let playerScore = 0;
 			let opponentScore = 0;
 			let gameStarted = false;
+			
+			function drawScore() {
+				PongFont.drawCharacter(playerScore,
+					gameWidth / 2 - 75,
+					scoreY,
+					objectWidth, ctx);
+				PongFont.drawCharacter(opponentScore,
+					gameWidth / 2 + 35,
+					scoreY,
+					objectWidth, ctx);
+			}
 
 			function reset() {
 				player.setGameWidth(gameWidth);
@@ -58,7 +67,7 @@
 				ctx.stroke();
 
 				ctx.beginPath();
-				ctx.setLineDash([5, 15]);
+				ctx.setLineDash([objectWidth, objectWidth * 2]);
 				ctx.moveTo(gameWidth / 2, 0);
 				ctx.lineTo(gameWidth / 2, gameHeight);
 				ctx.stroke();
@@ -85,17 +94,16 @@
 				opponent.draw(ctx);
 
 				if (ball.isInPlayerScoreZone()) {
-					playerScore++;
+					opponentScore++;
 					reset();
 				}
 
 				if (ball.isInOpponentScoreZone()) {
-					opponentScore++;
+					playerScore++;
 					reset();
 				}
-			
-				$playerScore.innerHTML = playerScore;
-				$opponentScore.innerHTML = opponentScore;
+
+				drawScore();			
 
 				window.requestAnimationFrame(update);
 			}
@@ -106,7 +114,7 @@
 				window.requestAnimationFrame(update);
 			}
 		
-			ctx.lineWidth = 3;
+			ctx.lineWidth = objectWidth;
 			ctx.fillStyle = 'white';		
 			ctx.strokeStyle = 'white';		
 
@@ -125,23 +133,13 @@
 				}
 				player.setIsMoving(false);
 			};
-					startGame();
+			startGame();
 		</script>
 		
 		<style>
 			body {
 				background: black;
 				color: white;
-			}
-			#playerScore, #opponentScore {
-				position: absolute;
-				font-size: 60px;
-			}
-			#playerScore {
-				left: 240px;
-			}
-			#opponentScore {
-				left: 300px;
 			}
 		</style>
 	</body>
