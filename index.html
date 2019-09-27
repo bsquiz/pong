@@ -31,11 +31,11 @@
 			let gameStarted = false;
 			
 			function drawScore() {
-				PongFont.drawCharacter(playerScore,
+				PongFont.drawString(playerScore,
 					gameWidth / 2 - 75,
 					scoreY,
 					objectWidth, ctx);
-				PongFont.drawCharacter(opponentScore,
+				PongFont.drawString(opponentScore,
 					gameWidth / 2 + 35,
 					scoreY,
 					objectWidth, ctx);

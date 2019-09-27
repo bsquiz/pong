@@ -1,4 +1,5 @@
 const PongFont = {
+	characterCols: 5,
 	sectionWidth: 1,
 	sectionHeight: 1,
 	characters: {
@@ -123,7 +124,23 @@ const PongFont = {
 			' ',' ',' ','*',
 			' ',' ',' ','*',
 		]
-	},	
+	},
+
+	drawString(string, x, y, scale, ctx) {
+		const str = string.toString();
+		const sW = this.sectionWidth * scale * this.characterCols;
+		let drawX = x;
+		
+		// left align text
+		if (str.length >= 2) {
+			drawX -= (str.length - 1) * sW;
+		}
+ 
+		for (let i=0; i<str.length; i++) {
+			this.drawCharacter(str[i], drawX, y, scale, ctx);
+			drawX += this.sectionWidth * scale * this.characterCols;
+		}
+	},
 		
 	drawCharacter(character, x, y, scale, ctx) {
 		const map = this.characters[character.toString()];
@@ -133,6 +150,7 @@ const PongFont = {
 		let drawX = x;
 		let drawY = y;
 		let currentCol = 1;	
+
 		if (map) {
 			for (let i=0; i<map.length; i++) {
 				if (map[i] === '*') {
